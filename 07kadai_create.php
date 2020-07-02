@@ -1,7 +1,7 @@
 <?php
 // var_dump($_POST);
 // exit();
-
+header('Content-type: application/json');
 // 関数ファイルの読み込み
 include("functions.php");
 
@@ -12,11 +12,19 @@ include("functions.php");
 // DB接続
 $pdo = connect_to_db();
 
+if (!empty($_POST)) {
+
+   $karte = $_POST['krt'];
+   $kana = $_POST['kn'];
+   $name = $_POST['nm'];
+
+
 
 // if (isset($_POST['send']) === true) {
 // データ取得SQL作成
-// $sql = 'SELECT * FROM schedule_share where karte LIKE "%' . $_POST["krt"] . '%" AND kana LIKE "%' . $_POST["kn"] . '%" AND name LIKE "%' . $_POST["nm"] . '%"';
-$sql = 'SELECT * FROM schedule_share where kana LIKE "%' . $_POST["kn"] . '%"';
+// $sql = 'SELECT * FROM schedule_share'; 
+$sql = 'SELECT * FROM schedule_share where karte LIKE "%' . $karte . '%" AND kana LIKE "%' . $kana . '%" AND name LIKE "%' . $name . '%"';
+// $sql = 'SELECT * FROM schedule_share where kana LIKE "%' . $_POST["kn"] . '%"';
 // $sql = 'SELECT * FROM schedule_share where kana = "' . $_POST["kn"] . '"';
 
 // SQL準備&実行
@@ -33,14 +41,19 @@ if ($status == false) {
 } else {
    // 正常にSQLが実行された場合は入力ページファイルに移動し，入力ページの処理を実行する
    // fetchAll()関数でSQLで取得したレコードを配列で取得できる
-   $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-   $output = [
-      $kana->kana
+   $output = array();
+   while($result = $stmt->fetchAll(PDO::FETCH_ASSOC)){
+   $output[]= array(
+      $karte=$result["karte"],
+      $kana=$result["kana"],
+      $name= $result["name"],
+
+   );
 
 
-   ];
-      
-   
+   }
+
+   // $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
    };
    // $output = "";
    // foreach ($result as $record) {
@@ -56,12 +69,12 @@ if ($status == false) {
    //    $output .= "</tr>";
    // }
    //jsonとして出力
-   header('Content-type: application/json');
+   
    echo json_encode($output, JSON_UNESCAPED_UNICODE);
    exit();
 
    
-   
+};
    
    
    

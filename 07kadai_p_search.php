@@ -11,11 +11,11 @@
    <form action="" method="POST">
       <h2>患者検索</h2>
       <p>カルテNo.検索</p>
-      <input type="text" name="krt">
+      <input type="text" name="krt" id="karte">
       <p>カナ検索</p>
       <input type="text" name="kn" id="kana">
       <p>名前検索</p>
-      <input type="text" name="nm">
+      <input type="text" name="nm" id="name">
       <button id="send">検索</button>
    </form>
 
@@ -50,40 +50,46 @@
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
    <script>
       $(function() {
-         let area;
 
-         $('#send').click(function() {
+         $('#send').on("click", function() {
             //HTMLから受け取るデータです。
-            const data = {
-               "kana": $('#kana').val()
-            };
 
             //ここからajaxの処理です。          
-            $.post({
-                  //POST通信
-                  type: "POST",
-                  //ここでデータの送信先URLを指定します。
-                  url: "07kadai_p_create.php",
-                  datatype: 'json',
-                  data: data
-               })
+            $.ajax({
+               //POST通信
+               type: "POST",
+               //ここでデータの送信先URLを指定します。
+               url: "07kadai_create.php",
+               datatype: 'json',
+               data: {
+                  karte: $('#karte').val(),
+                  kana: $('#kana').val(),
+                  name: $('#name').val()
+               }
+
+
                //処理が成功したら
-               .done(function() {
+               .done(function(data, textStatus, jqXHR) {
                   //HTMLファイル内の該当箇所にレスポンスデータを追加します。
-
                   console.log(data);
-                  $.each(data, function(key, item) {
-                     area = isValue(item.kana);
-                  })
-                  $('#output').text(area);
-               })
-               //処理がエラーであれば
-               .false(function(XMLHttpRequest, textStatus, error) {
-                  alert('通信エラー');
+
+                  $('#output').html(data);
+
                })
 
-            //submitによる画面リロードを防いでいます。
-            return false;
+               //処理がエラーであれば
+               .false(function(jqXHR, textStatus, error) {
+                  alert('通信エラー');
+
+
+               })
+               .always(function() {
+                  console.log("完了");
+
+               })
+               //submitによる画面リロードを防いでいます。
+               // return false();
+            });
          });
       });
    </script>
